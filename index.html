@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UCOllect - Sistem Jemput & Ambil Minyak Jelantah</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+
+        body{
+            font-family:Arial,sans-serif;
+            background-image:url('D:/box.webp');
+            background-size:cover;
+            background-position:center;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .container{
+            background:white;
+            padding:30px;
+            border-radius:20px;
+            box-shadow:0 20px 40px rgba(0,0,0,0.15);
+            width:90%;
+            max-width:900px;
+            text-align:center;
+        }
+
+        .logo{
+            font-size:2.5em;
+            color:green;
+            margin-bottom:10px;
+            font-weight:bold;
+        }
+
+        .subtitle{
+            color:#666;
+            margin-bottom:25px;
+        }
+
+        .menu-btn,.btn-primary,.btn-secondary{
+            border:none;
+            cursor:pointer;
+            border-radius:50px;
+            transition:0.3s;
+        }
+
+        .menu-btn{
+            background:linear-gradient(45deg,#ff6b35,#f7931e);
+            color:white;
+            padding:15px 30px;
+            margin:10px auto;
+            font-size:16px;
+            font-weight:bold;
+            width:320px;
+            display:block;
+        }
+
+        .btn-primary{
+            background:linear-gradient(45deg,#ff6b35,#f7931e);
+            color:white;
+            padding:14px 30px;
+            font-size:16px;
+            width:100%;
+            margin-top:10px;
+        }
+
+        .btn-secondary{
+            background:#6c757d;
+            color:white;
+            padding:12px 20px;
+            margin:5px;
+        }
+
+        .form-group{
+            margin:15px 0;
+            text-align:left;
+        }
+
+        .form-group label{
+            display:block;
+            margin-bottom:8px;
+            font-weight:bold;
+        }
+
+        .form-group input,.form-group textarea{
+            width:100%;
+            padding:12px;
+            border:2px solid #ddd;
+            border-radius:10px;
+        }
+
+        .detail-box{
+            background:#f8f9fa;
+            padding:15px;
+            border-radius:12px;
+            margin-top:15px;
+            text-align:left;
+        }
+
+        iframe{
+            width:100%;
+            height:320px;
+            border:0;
+            border-radius:12px;
+            margin-top:15px;
+        }
+
+        .hidden{display:none !important;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HOME -->
+    <div id="step1">
+        <div class="logo">🛢️ UCOllect</div>
+        <div class="subtitle">Smart Selling Used Cooking Oil</div>
+        <button class="menu-btn" onclick="showStep('step2')">Masuk</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="step2" class="hidden">
+        <h2>👤 Login</h2>
+        <div class="form-group"><input type="text" id="loginUsername" placeholder="Username"></div>
+        <div class="form-group"><input type="password" id="loginPassword" placeholder="Password"></div>
+        <button class="btn-primary" onclick="loginUser()">Login</button>
+        <button class="btn-secondary" onclick="showStep('stepRegister')">Belum punya akun? Daftar</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="stepRegister" class="hidden">
+        <h2>📝 Daftar Akun</h2>
+        <div class="form-group"><input type="text" id="regNama" placeholder="Nama Lengkap"></div>
+        <div class="form-group"><input type="text" id="regUsername" placeholder="Username"></div>
+        <div class="form-group"><input type="password" id="regPassword" placeholder="Password"></div>
+        <div class="form-group"><input type="text" id="regPhone" placeholder="No HP"></div>
+        <div class="form-group"><textarea id="regAlamat" placeholder="Alamat"></textarea></div>
+        <button class="btn-primary" onclick="registerUser()">Daftar</button>
+        <button class="btn-secondary" onclick="showStep('step2')">Kembali ke Login</button>
+    </div>
+
+    <!-- MENU -->
+    <div id="step3" class="hidden">
+        <h2>🏦 Layanan</h2>
+        <button class="menu-btn" onclick="showStep('stepSetor')">📦 Setor Langsung</button>
+        <button class="menu-btn" onclick="showStep('stepPickup')">🚚 Jemput Minyak</button>
+        <button class="menu-btn" onclick="goToPickupService()">🛢️ Ambil Minyak</button>
+        <button class="menu-btn" onclick="stepSaldo()">💰 Lihat Saldo</button>
+        <button class="menu-btn" onclick="showHistory()">📑 Riwayat</button>
+    </div>
+
+    <!-- SETOR -->
+    <div id="stepSetor" class="hidden">
+        <h2>📦 Setor Langsung</h2>
+        <div class="form-group">
+            <label>Jumlah Liter</label>
+            <input type="number" id="jumlahLiter">
+        </div>
+        <button class="btn-primary" onclick="processSetorLangsung()">Proses</button>
+    </div>
+
+    <!-- HASIL SETOR -->
+    <div id="stepSetorResult" class="hidden">
+        <h2>💰 Hasil Setoran</h2>
+        <div id="setorDetail" class="detail-box"></div>
+        <button class="btn-primary" onclick="stepSaldo()">Lihat Saldo</button>
+    </div>
+
+    <!-- JEMPUT -->
+    <div id="stepPickup" class="hidden">
+        <h2>🚚 Jemput Minyak</h2>
+
+        <div class="form-group">
+            <label>Alamat Tujuan Penjemputan</label>
+            <textarea id="alamatJemput" placeholder="Masukkan alamat lengkap..." oninput="autoPreviewMap()"></textarea>
+        </div>
+ 	<div class="form-group">
+            <label>Jumlah Liter</label>
+            <input type="number" id="pickupRequestLiter">
+        </div>
+        <div class="form-group">
+            <label>Pilih Jadwal</label>
+            <select id="pickupSchedule">
+                <option>SENIN 07.00-12.00</option>
+                <option>SENIN 13.00-15.00</option>
+                <option>SELASA 07.00-12.00</option>
+                <option>SELASA 13.00-15.00</option>
+                <option>RABU 07.00-12.00</option>
+                <option>RABU 13.00-15.00</option>
+                <option>KAMIS 07.00-12.00</option>
+                <option>KAMIS 13.00-15.00</option>
+                <option>JUMAT 07.00-12.00</option>
+                <option>JUMAT 13.00-15.00</option>
+                <option>SABTU 07.00-12.00</option>
+                <option>SABTU 13.00-15.00</option>
+                <option>MINGGU 07.00-12.00</option>
+                <option>MINGGU 13.00-15.00</option>
+            </select>
+        </div>
+
+        <button class="btn-secondary" onclick="getCurrentLocation()">📍 Lokasi</button>
+        <button class="btn-secondary" onclick="showRoute()">🧭 Rute Otomatis</button>
+        <button class="btn-primary" onclick="submitPickup()">Ajukan</button>
+
+        <iframe id="googleMapFrame"></iframe>
+    </div>
+
+    <!-- STATUS PICKUP -->
+    <div id="stepPickupStatus" class="hidden">
+        <h2>📋 Status Penjemputan</h2>
+        <div id="pickupDetail" class="detail-box"></div>
+
+        <iframe id="pickupStatusMapFrame"></iframe>
+
+        <button class="btn-secondary" onclick="processPickup()">🚚 Proses</button>
+        <button class="btn-primary" onclick="showStep('step3')">Menu</button>
+    </div>
+
+    <!-- AMBIL MINYAK -->
+    <div id="stepPickupService" class="hidden">
+        <h2>🛢️ Ambil Minyak</h2>
+        <div id="pickupServiceDetail" class="detail-box"></div>
+
+        <div class="form-group">
+            <label>Volume Minyak (Liter)</label>
+            <input type="number" id="pickupLiter">
+        </div>
+
+        <button class="btn-secondary" onclick="loadPickupRoute()">🧭 Rute Otomatis</button>
+        <button class="btn-secondary" onclick="startPickup()">🚚 Mulai</button>
+        <button class="btn-secondary" onclick="finishPickup()">✅ Selesai</button>
+
+        <iframe id="serviceMapFrame"></iframe>
+
+        <button class="btn-primary" onclick="showStep('step3')">Menu</button>
+    </div>
+
+     <div id="stepSaldo" class="hidden">
+        <h2>💰 Saldo</h2>
+        <div id="saldoDetail" class="detail-box"></div>
+        <button class="btn-primary" onclick="showWithdrawMenu()">🏧 Ambil Saldo</button>
+        <button class="btn-secondary" onclick="showStep('step3')">Menu</button>
+    </div>
+
+    <!-- FITUR BARU DIGABUNGKAN -->
+    <div id="stepWithdraw" class="hidden">
+        <h2>🏧 Ambil Saldo</h2>
+
+        <div class="detail-box" id="withdrawSaldoInfo"></div>
+
+        <div class="form-group">
+            <label>Pilih Bank</label>
+            <select id="withdrawBank">
+                <option value="">-- Pilih Bank --</option>
+                <option>BCA</option>
+                <option>BNI</option>
+                <option>MANDIRI</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Nomor Rekening</label>
+            <input type="text" id="withdrawRekening">
+        </div>
+
+        <div class="form-group">
+            <label>Nominal Transfer</label>
+            <input type="number" id="withdrawAmount">
+        </div>
+
+        <button class="btn-primary" onclick="processWithdraw()">Transfer</button>
+        <button class="btn-secondary" onclick="showStep('step3')">Kembali</button>
+    </div>
+
+
+    <!-- HISTORY -->
+    <div id="stepHistory" class="hidden">
+        <h2>📑 Riwayat</h2>
+        <div id="historyDetail" class="detail-box"></div>
+        <button class="btn-primary" onclick="showStep('step3')">Menu</button>
+    </div>
+
+</div>
+
+<script>
+let saldoNasabah = 0;
+let pickupData = null;
+let totalPickupLiter = 0;
+let riwayatTransaksi = [];
+let akunTerdaftar = null;
+
+const titikAwalSPBU = "SPBU Kiara Condong, Jl. Ibrahim Adjie, Bandung";
+
+function showStep(id){
+    document.querySelectorAll(".container > div").forEach(el=>el.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+}
+
+function registerUser(){
+    akunTerdaftar = {
+        username: regUsername.value,
+        password: regPassword.value
+    };
+    alert("Pendaftaran berhasil!");
+    showStep("step2");
+}
+
+function loginUser(){
+    if(loginUsername.value === akunTerdaftar?.username &&
+       loginPassword.value === akunTerdaftar?.password){
+        alert("Login berhasil!");
+        showStep("step3");
+    } else {
+        alert("Login gagal!");
+    }
+}
+
+function processSetorLangsung(){
+    let liter = parseFloat(jumlahLiter.value);
+    if(!liter || liter <= 0) return;
+
+    let rupiah = liter * 5000;
+    saldoNasabah += rupiah;
+
+    showStep("stepSetorResult");
+    setorDetail.innerHTML = `
+        <p><strong>Jumlah:</strong> ${liter} Liter</p>
+        <p><strong>Nilai:</strong> Rp ${rupiah.toLocaleString("id-ID")}</p>
+    `;
+}
+
+function autoPreviewMap(){
+    const alamat = alamatJemput.value.trim();
+    if(alamat.length < 5) return;
+
+    googleMapFrame.src =
+        `https://www.google.com/maps?q=${encodeURIComponent(alamat)}&output=embed`;
+}
+
+function showRoute(){
+    const alamat = alamatJemput.value.trim();
+    if(!alamat) return;
+
+    const routeUrl =
+        `https://www.google.com/maps?saddr=${encodeURIComponent(titikAwalSPBU)}&daddr=${encodeURIComponent(alamat)}&output=embed`;
+
+    googleMapFrame.src = routeUrl;
+}
+
+function submitPickup(){
+    pickupData = {
+        alamat: alamatJemput.value,
+        status: "Menunggu Penjemputan"
+
+    };
+
+    riwayatTransaksi.push("Pickup ke " + pickupData.alamat);
+
+    showStep("stepPickupStatus");
+
+    pickupDetail.innerHTML = `
+        <p><strong>Asal:</strong> ${titikAwalSPBU}</p>
+        <p><strong>Tujuan:</strong> ${pickupData.alamat}</p>
+        <p><strong>Status:</strong> ${pickupData.status}</p>
+    `;
+
+    loadPickupStatusMap();
+}
+
+function loadPickupStatusMap(){
+    pickupStatusMapFrame.src =
+        `https://www.google.com/maps?saddr=${encodeURIComponent(titikAwalSPBU)}&daddr=${encodeURIComponent(pickupData.alamat)}&output=embed`;
+}
+
+function processPickup(){
+    pickupData.status = "Kurir Menuju Lokasi";
+    pickupDetail.innerHTML += `<p><strong>Estimasi:</strong> 20 menit</p>`;
+    loadPickupStatusMap();
+}
+
+function goToPickupService(){
+    if(!pickupData) return;
+    showStep("stepPickupService");
+    pickupServiceDetail.innerHTML = `
+        <p><strong>Rute:</strong> ${titikAwalSPBU} ➝ ${pickupData.alamat}</p>
+    `;
+    loadPickupRoute();
+}
+
+function loadPickupRoute(){
+    serviceMapFrame.src =
+        `https://www.google.com/maps?saddr=${encodeURIComponent(titikAwalSPBU)}&daddr=${encodeURIComponent(pickupData.alamat)}&output=embed`;
+}
+
+function startPickup(){
+    pickupServiceDetail.innerHTML += `<p><strong>Status:</strong> Dimulai</p>`;
+}
+
+function finishPickup(){
+    let liter = parseFloat(pickupLiter.value);
+    let rupiah = liter * 5000;
+    saldoNasabah += rupiah;
+    totalPickupLiter += liter;
+
+    pickupServiceDetail.innerHTML += `
+        <p><strong>Selesai:</strong> ${liter} Liter</p>
+        <p><strong>Saldo:</strong> Rp ${saldoNasabah.toLocaleString("id-ID")}</p>
+    `;
+
+}
+
+function stepSaldo(){
+    showStep("stepSaldo");
+    saldoDetail.innerHTML = `
+        <p><strong>Total Saldo:</strong> Rp ${saldoNasabah.toLocaleString("id-ID")}</p>
+    `;
+}
+
+function showWithdrawMenu(){
+    showStep("stepWithdraw");
+    withdrawSaldoInfo.innerHTML = `
+        <p><strong>Saldo Tersedia:</strong> Rp ${saldoNasabah.toLocaleString("id-ID")}</p>
+    `;
+}
+
+function processWithdraw(){
+    const bank = withdrawBank.value;
+    const rekening = withdrawRekening.value;
+    const amount = parseFloat(withdrawAmount.value);
+
+    if(!bank || !rekening || !amount || amount <= 0){
+        alert("Lengkapi semua data!");
+        return;
+    }
+
+    if(amount > saldoNasabah){
+        alert("Saldo tidak cukup!");
+        return;
+    }
+
+    saldoNasabah -= amount;
+    riwayatTransaksi.push(`Transfer Rp ${amount} ke ${bank} (${rekening})`);
+
+    alert("Transfer berhasil!");
+    showStep("step3");
+
+}
+
+function showHistory(){
+    showStep("stepHistory");
+    historyDetail.innerHTML = riwayatTransaksi.join("<br>");
+}
+
+function getCurrentLocation(){
+    if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition((pos)=>{
+            alamatJemput.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+            autoPreviewMap();
+        });
+    }
+}
+</script>
+
+</body>
+</html>
