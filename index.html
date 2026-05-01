@@ -3,465 +3,778 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UCOllect - Sistem Jemput & Ambil Minyak Jelantah</title>
+    <title>🛢️ UCOllect - Sistem Jemput Minyak Jelantah</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
-
         body{
-            font-family:Arial,sans-serif;
-            background-image:url('https://blue.kumparan.com/image/upload/fl_progressive,fl_lossy,c_fill,f_auto,q_auto:best,w_640/v1634025439/01k4hv0hcs5f3ks7e10rcw98xr.jpg');
-            background-size:cover;
-            background-position:center;
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
             min-height:100vh;
             display:flex;
             justify-content:center;
             align-items:center;
+            padding:20px;
         }
-
         .container{
             background:white;
-            padding:30px;
-            border-radius:20px;
-            box-shadow:0 20px 40px rgba(0,0,0,0.15);
-            width:90%;
-            max-width:900px;
+            padding:40px;
+            border-radius:25px;
+            box-shadow:0 25px 50px rgba(0,0,0,0.2);
+            width:100%;
+            max-width:950px;
+            max-height:90vh;
+            overflow-y:auto;
             text-align:center;
         }
-
         .logo{
-            font-size:2.5em;
-            color:green;
-            margin-bottom:10px;
-            font-weight:bold;
+            font-size:3em;
+            background:linear-gradient(45deg,#28a745,#20c997);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            margin-bottom:15px;
+            font-weight:900;
         }
-
         .subtitle{
             color:#666;
-            margin-bottom:25px;
+            font-size:1.2em;
+            margin-bottom:30px;
         }
-
         .menu-btn,.btn-primary,.btn-secondary{
             border:none;
             cursor:pointer;
             border-radius:50px;
-            transition:0.3s;
+            transition:all 0.3s;
+            width:100%;
+            margin:12px 0;
+            padding:18px 25px;
+            font-size:16px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:1px;
         }
-
+        .menu-btn:hover,.btn-primary:hover{
+            transform:translateY(-2px);
+            box-shadow:0 10px 25px rgba(0,0,0,0.2);
+        }
         .menu-btn{
             background:linear-gradient(45deg,#ff6b35,#f7931e);
             color:white;
-            padding:15px 30px;
-            margin:10px auto;
-            font-size:16px;
-            font-weight:bold;
-            width:320px;
-            display:block;
+            font-size:15px;
         }
-
         .btn-primary{
-            background:linear-gradient(45deg,#ff6b35,#f7931e);
+            background:linear-gradient(45deg,#28a745,#20c997);
             color:white;
-            padding:14px 30px;
-            font-size:16px;
-            width:100%;
-            margin-top:10px;
         }
-
         .btn-secondary{
-            background:#6c757d;
+            background:linear-gradient(45deg,#6c757d,#495057);
             color:white;
-            padding:12px 20px;
-            margin:5px;
         }
-
         .form-group{
-            margin:15px 0;
+            margin:20px 0;
             text-align:left;
         }
-
         .form-group label{
             display:block;
-            margin-bottom:8px;
-            font-weight:bold;
+            margin-bottom:10px;
+            font-weight:700;
+            color:#333;
         }
-
-        .form-group input,.form-group textarea{
+        .form-group input,.form-group textarea,.form-group select{
             width:100%;
-            padding:12px;
-            border:2px solid #ddd;
-            border-radius:10px;
+            padding:15px;
+            border:2px solid #e9ecef;
+            border-radius:15px;
+            font-size:15px;
+            transition:all 0.3s;
         }
-
+        .form-group input:focus,.form-group textarea:focus{
+            outline:none;
+            border-color:#28a745;
+            box-shadow:0 0 0 3px rgba(40,167,69,0.1);
+        }
         .detail-box{
             background:#f8f9fa;
-            padding:15px;
-            border-radius:12px;
-            margin-top:15px;
+            padding:25px;
+            border-radius:20px;
+            margin:20px 0;
             text-align:left;
+            border-left:5px solid #28a745;
         }
-
-        iframe{
-            width:100%;
-            height:320px;
-            border:0;
-            border-radius:12px;
-            margin-top:15px;
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #28a745;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right:10px;
         }
-
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .hidden{display:none !important;}
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+            margin: 5px;
+        }
+        .status-sukses { background: #28a745; }
+        .status-proses { background: #ffc107; color:#000; }
+        .status-gagal { background: #dc3545; }
+        .saldo-display {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #28a745;
+            margin: 20px 0;
+        }
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        .history-item:last-child { border-bottom: none; }
+        #historyList {
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #c3e6cb;
+        }
+        .error-msg {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-
     <!-- HOME -->
     <div id="step1">
-        <div class="logo">🛢️ UCOllect</div>
-        <div class="subtitle">Smart Selling Used Cooking Oil</div>
-        <button class="menu-btn" onclick="showStep('step2')">Masuk</button>
+        <div class="logo">🛢️ UCOLLECT</div>
+        <div class="subtitle">Smart Used Cooking Oil Collection System</div>
+        <div style="margin:30px 0;">
+            <button class="menu-btn" onclick="showStep('step2')">👤 MASUK</button>
+            <button class="menu-btn" onclick="showStep('stepRegister')">📝 DAFTAR</button>
+        </div>
+        <div style="font-size:0.9em;color:#888;">
+            Sistem Jemput & Penjualan Minyak Jelantah Terlengkap
+        </div>
     </div>
 
     <!-- LOGIN -->
     <div id="step2" class="hidden">
-        <h2>👤 Login</h2>
-        <div class="form-group"><input type="text" id="loginUsername" placeholder="Username"></div>
-        <div class="form-group"><input type="password" id="loginPassword" placeholder="Password"></div>
-        <button class="btn-primary" onclick="loginUser()">Login</button>
-        <button class="btn-secondary" onclick="showStep('stepRegister')">Belum punya akun? Daftar</button>
+        <h2>🔐 Login Akun</h2>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="loginUsername" placeholder="Masukkan username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Masukkan password">
+        </div>
+        <button class="btn-primary" onclick="loginUser()">
+            <span id="loginSpinner" class="loading" style="display:none;"></span>
+            🚀 MASUK SEKARANG
+        </button>
+        <div style="margin-top:20px;">
+            <button class="btn-secondary" onclick="showStep('stepRegister')">Belum punya akun? Daftar</button>
+            <button class="btn-secondary" onclick="showStep('step1')">← Kembali</button>
+        </div>
+        <div id="loginMessage"></div>
     </div>
 
     <!-- REGISTER -->
     <div id="stepRegister" class="hidden">
-        <h2>📝 Daftar Akun</h2>
-        <div class="form-group"><input type="text" id="regNama" placeholder="Nama Lengkap"></div>
-        <div class="form-group"><input type="text" id="regUsername" placeholder="Username"></div>
-        <div class="form-group"><input type="password" id="regPassword" placeholder="Password"></div>
-        <div class="form-group"><input type="text" id="regPhone" placeholder="No HP"></div>
-        <div class="form-group"><textarea id="regAlamat" placeholder="Alamat"></textarea></div>
-        <button class="btn-primary" onclick="registerUser()">Daftar</button>
-        <button class="btn-secondary" onclick="showStep('step2')">Kembali ke Login</button>
+        <h2>📝 Daftar Akun Baru</h2>
+        <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="regNama" placeholder="Nama sesuai KTP">
+        </div>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="regUsername" placeholder="Username unik">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPassword" placeholder="Password minimal 6 karakter">
+        </div>
+        <div class="form-group">
+            <label>No. Handphone</label>
+            <input type="tel" id="regPhone" placeholder="081xxxxxxxxx">
+        </div>
+        <div class="form-group">
+            <label>Alamat Lengkap</label>
+            <textarea id="regAlamat" rows="3" placeholder="Alamat rumah lengkap untuk penjemputan"></textarea>
+        </div>
+        <button class="btn-primary" onclick="registerUser()">
+            <span id="regSpinner" class="loading" style="display:none;"></span>
+            ✅ DAFTAR GRATIS
+        </button>
+        <button class="btn-secondary" onclick="showStep('step2')">← Login</button>
+        <div id="regMessage"></div>
     </div>
 
-    <!-- MENU -->
+    <!-- DASHBOARD -->
     <div id="step3" class="hidden">
-        <h2>🏦 Layanan</h2>
-        <button class="menu-btn" onclick="showStep('stepSetor')">📦 Setor Langsung</button>
-        <button class="menu-btn" onclick="showStep('stepPickup')">🚚 Jemput Minyak</button>
-        <button class="menu-btn" onclick="goToPickupService()">🛢️ Ambil Minyak</button>
-        <button class="menu-btn" onclick="stepSaldo()">💰 Lihat Saldo</button>
-        <button class="menu-btn" onclick="showHistory()">📑 Riwayat</button>
+        <h2>🏦 DASHBOARD <span id="userInfo" style="color:#28a745;font-weight:900;"></span></h2>
+        <div class="saldo-display" id="currentSaldo">Rp 0</div>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin:30px 0;">
+            <button class="menu-btn" onclick="showStep('stepSetor')">
+                📦 Setor Langsung<br><small>Rp5.000/liter</small>
+            </button>
+            <button class="menu-btn" onclick="showStep('stepPickup')">
+                🚚 Request Jemput<br><small>Jadwal fleksibel</small>
+            </button>
+            <button class="menu-btn" onclick="showStep('stepSaldo')">
+                💰 Detail Saldo
+            </button>
+            <button class="menu-btn" onclick="showStep('stepWithdraw')">
+                🏧 Tarik Saldo
+            </button>
+        </div>
+        
+        <button class="menu-btn" onclick="showHistory()">📊 Riwayat Transaksi</button>
+        <button class="btn-secondary" onclick="logoutUser()" style="width:auto;padding:12px 30px;">
+            🚪 Keluar
+        </button>
     </div>
 
-    <!-- SETOR -->
+    <!-- SETOR LANGSUNG -->
     <div id="stepSetor" class="hidden">
-        <h2>📦 Setor Langsung</h2>
+        <h2>📦 Setor Minyak Langsung</h2>
+        <p style="color:#666;margin-bottom:20px;">Harga: <strong>Rp 5.000 / liter</strong></p>
+        
         <div class="form-group">
             <label>Jumlah Liter</label>
-            <input type="number" id="jumlahLiter">
+            <input type="number" id="jumlahLiter" min="0.1" step="0.1" placeholder="0.0">
         </div>
-        <button class="btn-primary" onclick="processSetorLangsung()">Proses</button>
-    </div>
-
-    <!-- HASIL SETOR -->
-    <div id="stepSetorResult" class="hidden">
-        <h2>💰 Hasil Setoran</h2>
-        <div id="setorDetail" class="detail-box"></div>
-        <button class="btn-primary" onclick="stepSaldo()">Lihat Saldo</button>
-    </div>
-
-    <!-- JEMPUT -->
-    <div id="stepPickup" class="hidden">
-        <h2>🚚 Jemput Minyak</h2>
-
-        <div class="form-group">
-            <label>Alamat Tujuan Penjemputan</label>
-            <textarea id="alamatJemput" placeholder="Masukkan alamat lengkap..." oninput="autoPreviewMap()"></textarea>
+        
+        <div class="detail-box">
+            <h4>📋 Preview Transaksi</h4>
+            <div id="setorPreview">
+                <p><strong>Total: </strong><span id="setorTotal">Rp 0</span></p>
+                <p><em id="setorInfo">Masukkan jumlah liter untuk preview</em></p>
+            </div>
         </div>
- 	<div class="form-group">
-            <label>Jumlah Liter</label>
-            <input type="number" id="pickupRequestLiter">
+        
+        <button class="btn-primary" onclick="prosesSetor()">
+            <span id="setorSpinner" class="loading" style="display:none;"></span>
+            💰 PROSES SETORAN
+        </button>
+        <button class="btn-secondary" onclick="showStep('step3')">← Kembali</button>
+        <div id="setorMessage"></div>
+    </div>
+
+    <!-- SALDO DETAIL -->
+    <div id="stepSaldo" class="hidden">
+        <h2>💰 Detail Saldo</h2>
+        <div class="detail-box">
+            <div class="saldo-display" id="saldoDetail">Rp 0</div>
+            <p><strong>ID User:</strong> <span id="userIdDisplay">-</span></p>
+            <p><strong>Nama:</strong> <span id="userNameDisplay">-</span></p>
+            <p><strong>HP:</strong> <span id="userPhoneDisplay">-</span></p>
         </div>
-        <div class="form-group">
-            <label>Pilih Jadwal</label>
-            <select id="pickupSchedule">
-                <option>SENIN 07.00-12.00</option>
-                <option>SENIN 13.00-15.00</option>
-                <option>SELASA 07.00-12.00</option>
-                <option>SELASA 13.00-15.00</option>
-                <option>RABU 07.00-12.00</option>
-                <option>RABU 13.00-15.00</option>
-                <option>KAMIS 07.00-12.00</option>
-                <option>KAMIS 13.00-15.00</option>
-                <option>JUMAT 07.00-12.00</option>
-                <option>JUMAT 13.00-15.00</option>
-                <option>SABTU 07.00-12.00</option>
-                <option>SABTU 13.00-15.00</option>
-                <option>MINGGU 07.00-12.00</option>
-                <option>MINGGU 13.00-15.00</option>
-            </select>
-        </div>
-
-        <button class="btn-secondary" onclick="getCurrentLocation()">📍 Lokasi</button>
-        <button class="btn-secondary" onclick="showRoute()">🧭 Rute Otomatis</button>
-        <button class="btn-primary" onclick="submitPickup()">Ajukan</button>
-
-        <iframe id="googleMapFrame"></iframe>
+        <button class="btn-primary" onclick="showStep('stepWithdraw')">🏧 Tarik Saldo</button>
+        <button class="btn-secondary" onclick="showStep('step3')">← Menu Utama</button>
     </div>
 
-    <!-- STATUS PICKUP -->
-    <div id="stepPickupStatus" class="hidden">
-        <h2>📋 Status Penjemputan</h2>
-        <div id="pickupDetail" class="detail-box"></div>
-
-        <iframe id="pickupStatusMapFrame"></iframe>
-
-        <button class="btn-secondary" onclick="processPickup()">🚚 Proses</button>
-        <button class="btn-primary" onclick="showStep('step3')">Menu</button>
-    </div>
-
-    <!-- AMBIL MINYAK -->
-    <div id="stepPickupService" class="hidden">
-        <h2>🛢️ Ambil Minyak</h2>
-        <div id="pickupServiceDetail" class="detail-box"></div>
-
-        <div class="form-group">
-            <label>Volume Minyak (Liter)</label>
-            <input type="number" id="pickupLiter">
-        </div>
-
-        <button class="btn-secondary" onclick="loadPickupRoute()">🧭 Rute Otomatis</button>
-        <button class="btn-secondary" onclick="startPickup()">🚚 Mulai</button>
-        <button class="btn-secondary" onclick="finishPickup()">✅ Selesai</button>
-
-        <iframe id="serviceMapFrame"></iframe>
-
-        <button class="btn-primary" onclick="showStep('step3')">Menu</button>
-    </div>
-
-     <div id="stepSaldo" class="hidden">
-        <h2>💰 Saldo</h2>
-        <div id="saldoDetail" class="detail-box"></div>
-        <button class="btn-primary" onclick="showWithdrawMenu()">🏧 Ambil Saldo</button>
-        <button class="btn-secondary" onclick="showStep('step3')">Menu</button>
-    </div>
-
-    <!-- FITUR BARU DIGABUNGKAN -->
+    <!-- WITHDRAW -->
     <div id="stepWithdraw" class="hidden">
-        <h2>🏧 Ambil Saldo</h2>
-
-        <div class="detail-box" id="withdrawSaldoInfo"></div>
-
+        <h2>🏧 Penarikan Saldo</h2>
+        <div class="detail-box">
+            <h4>💳 Saldo Tersedia</h4>
+            <div class="saldo-display" id="withdrawSaldoAvailable">Rp 0</div>
+            <small style="color:#666;">* Minimal Rp 50.000</small>
+        </div>
+        
         <div class="form-group">
             <label>Pilih Bank</label>
             <select id="withdrawBank">
-                <option value="">-- Pilih Bank --</option>
-                <option>BCA</option>
-                <option>BNI</option>
-                <option>MANDIRI</option>
+                <option value="">Pilih Bank Tujuan</option>
+                <option value="BCA">🏦 BCA</option>
+                <option value="BNI">🏦 BNI</option>
+                <option value="MANDIRI">🏦 Mandiri</option>
+                <option value="BRI">🏦 BRI</option>
             </select>
         </div>
-
+        <div class="form-group">
+            <label>Nama Pemilik Rekening</label>
+            <input type="text" id="withdrawNama" placeholder="Sesuai buku rekening">
+        </div>
         <div class="form-group">
             <label>Nomor Rekening</label>
-            <input type="text" id="withdrawRekening">
+            <input type="text" id="withdrawRekening" placeholder="No. Rekening 16 digit">
         </div>
-
         <div class="form-group">
-            <label>Nominal Transfer</label>
-            <input type="number" id="withdrawAmount">
+            <label>Nominal Penarikan</label>
+            <input type="number" id="withdrawAmount" min="50000" placeholder="50000">
         </div>
-
-        <button class="btn-primary" onclick="processWithdraw()">Transfer</button>
-        <button class="btn-secondary" onclick="showStep('step3')">Kembali</button>
+        
+        <button class="btn-primary" onclick="prosesWithdraw()">
+            <span id="withdrawSpinner" class="loading" style="display:none;"></span>
+            💸 AJUKAN TRANSFER
+        </button>
+        <button class="btn-secondary" onclick="showStep('stepSaldo')">← Kembali</button>
+        <div id="withdrawMessage"></div>
     </div>
-
 
     <!-- HISTORY -->
     <div id="stepHistory" class="hidden">
-        <h2>📑 Riwayat</h2>
-        <div id="historyDetail" class="detail-box"></div>
-        <button class="btn-primary" onclick="showStep('step3')">Menu</button>
+        <h2>📊 Riwayat Transaksi</h2>
+        <div class="detail-box">
+            <div id="historyList">Loading riwayat...</div>
+        </div>
+        <button class="btn-primary" onclick="showStep('step3')">← Menu Utama</button>
     </div>
 
+    <!-- PICKUP REQUEST -->
+    <div id="stepPickup" class="hidden">
+        <h2>🚚 Request Penjemputan</h2>
+        <div class="form-group">
+            <label>Alamat Penjemputan</label>
+            <textarea id="pickupAlamat" rows="3" placeholder="Alamat lengkap rumah Anda..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Estimasi Jumlah (Liter)</label>
+            <input type="number" id="pickupLiter" min="1" step="0.5" placeholder="5.0">
+        </div>
+        <div class="form-group">
+            <label>Jadwal Penjemputan</label>
+            <select id="pickupJadwal">
+                <option value="SENIN_07-12">Senin 07:00 - 12:00</option>
+                <option value="SENIN_13-15">Senin 13:00 - 15:00</option>
+                <option value="SELASA_07-12">Selasa 07:00 - 12:00</option>
+                <option value="SELASA_13-15">Selasa 13:00 - 15:00</option>
+                <option value="RABU_07-12">Rabu 07:00 - 12:00</option>
+                <option value="RABU_13-15">Rabu 13:00 - 15:00</option>
+                <option value="KAMIS_07-12">Kamis 07:00 - 12:00</option>
+                <option value="KAMIS_13-15">Kamis 13:00 - 15:00</option>
+                <option value="JUMAT_07-12">Jumat 07:00 - 12:00</option>
+                <option value="JUMAT_13-15">Jumat 13:00 - 15:00</option>
+                <option value="SABTU_07-12">Sabtu 07:00 - 12:00</option>
+                <option value="SABTU_13-15">Sabtu 13:00 - 15:00</option>
+                <option value="MINGGU_07-12">Minggu 07:00 - 12:00</option>
+            </select>
+        </div>
+        <button class="btn-primary" onclick="submitPickup()">
+            <span id="pickupSpinner" class="loading" style="display:none;"></span>
+            🚚 AJUKAN JEMPUTAN
+        </button>
+        <button class="btn-secondary" onclick="showStep('step3')">← Kembali</button>
+        <div id="pickupMessage"></div>
+    </div>
 </div>
 
 <script>
-let saldoNasabah = 0;
-let pickupData = null;
-let totalPickupLiter = 0;
-let riwayatTransaksi = [];
-let akunTerdaftar = null;
-
-const titikAwalSPBU = "SPBU Kiara Condong, Jl. Ibrahim Adjie, Bandung";
-
-function showStep(id){
-    document.querySelectorAll(".container > div").forEach(el=>el.classList.add("hidden"));
-    document.getElementById(id).classList.remove("hidden");
-}
-
-function registerUser(){
-    akunTerdaftar = {
-        username: regUsername.value,
-        password: regPassword.value
-    };
-    alert("Pendaftaran berhasil!");
-    showStep("step2");
-}
-
-function loginUser(){
-    if(loginUsername.value === akunTerdaftar?.username &&
-       loginPassword.value === akunTerdaftar?.password){
-        alert("Login berhasil!");
-        showStep("step3");
-    } else {
-        alert("Login gagal!");
+// =====================================================
+// DATABASE SIMULASI + LOCAL STORAGE BACKEND
+// =====================================================
+class UCollectDB {
+    constructor() {
+        this.dbName = 'ucollect_db';
+        this.initDB();
     }
-}
-
-function processSetorLangsung(){
-    let liter = parseFloat(jumlahLiter.value);
-    if(!liter || liter <= 0) return;
-
-    let rupiah = liter * 5000;
-    saldoNasabah += rupiah;
-
-    showStep("stepSetorResult");
-    setorDetail.innerHTML = `
-        <p><strong>Jumlah:</strong> ${liter} Liter</p>
-        <p><strong>Nilai:</strong> Rp ${rupiah.toLocaleString("id-ID")}</p>
-    `;
-}
-
-function autoPreviewMap(){
-    const alamat = alamatJemput.value.trim();
-    if(alamat.length < 5) return;
-
-    googleMapFrame.src =
-        `https://www.google.com/maps?q=${encodeURIComponent(alamat)}&output=embed`;
-}
-
-function showRoute(){
-    const alamat = alamatJemput.value.trim();
-    if(!alamat) return;
-
-    const routeUrl =
-        `https://www.google.com/maps?saddr=${encodeURIComponent(titikAwalSPBU)}&daddr=${encodeURIComponent(alamat)}&output=embed`;
-
-    googleMapFrame.src = routeUrl;
-}
-
-function submitPickup(){
-    pickupData = {
-        alamat: alamatJemput.value,
-        status: "Menunggu Penjemputan"
-
-    };
-
-    riwayatTransaksi.push("Pickup ke " + pickupData.alamat);
-
-    showStep("stepPickupStatus");
-
-    pickupDetail.innerHTML = `
-        <p><strong>Asal:</strong> ${titikAwalSPBU}</p>
-        <p><strong>Tujuan:</strong> ${pickupData.alamat}</p>
-        <p><strong>Status:</strong> ${pickupData.status}</p>
-    `;
-
-    loadPickupStatusMap();
-}
-
-function loadPickupStatusMap(){
-    pickupStatusMapFrame.src =
-        `https://www.google.com/maps?saddr=${encodeURIComponent(titikAwalSPBU)}&daddr=${encodeURIComponent(pickupData.alamat)}&output=embed`;
-}
-
-function processPickup(){
-    pickupData.status = "Kurir Menuju Lokasi";
-    pickupDetail.innerHTML += `<p><strong>Estimasi:</strong> 20 menit</p>`;
-    loadPickupStatusMap();
-}
-
-function goToPickupService(){
-    if(!pickupData) return;
-    showStep("stepPickupService");
-    pickupServiceDetail.innerHTML = `
-        <p><strong>Rute:</strong> ${titikAwalSPBU} ➝ ${pickupData.alamat}</p>
-    `;
-    loadPickupRoute();
-}
-
-function loadPickupRoute(){
-    serviceMapFrame.src =
-        `https://www.google.com/maps?saddr=${encodeURIComponent(titikAwalSPBU)}&daddr=${encodeURIComponent(pickupData.alamat)}&output=embed`;
-}
-
-function startPickup(){
-    pickupServiceDetail.innerHTML += `<p><strong>Status:</strong> Dimulai</p>`;
-}
-
-function finishPickup(){
-    let liter = parseFloat(pickupLiter.value);
-    let rupiah = liter * 5000;
-    saldoNasabah += rupiah;
-    totalPickupLiter += liter;
-
-    pickupServiceDetail.innerHTML += `
-        <p><strong>Selesai:</strong> ${liter} Liter</p>
-        <p><strong>Saldo:</strong> Rp ${saldoNasabah.toLocaleString("id-ID")}</p>
-    `;
-
-}
-
-function stepSaldo(){
-    showStep("stepSaldo");
-    saldoDetail.innerHTML = `
-        <p><strong>Total Saldo:</strong> Rp ${saldoNasabah.toLocaleString("id-ID")}</p>
-    `;
-}
-
-function showWithdrawMenu(){
-    showStep("stepWithdraw");
-    withdrawSaldoInfo.innerHTML = `
-        <p><strong>Saldo Tersedia:</strong> Rp ${saldoNasabah.toLocaleString("id-ID")}</p>
-    `;
-}
-
-function processWithdraw(){
-    const bank = withdrawBank.value;
-    const rekening = withdrawRekening.value;
-    const amount = parseFloat(withdrawAmount.value);
-
-    if(!bank || !rekening || !amount || amount <= 0){
-        alert("Lengkapi semua data!");
-        return;
+    
+    initDB() {
+        if(!localStorage.getItem(this.dbName)) {
+            const initData = {
+                users: [
+                    {id:1, nama:'Admin UCOllect', username:'admin', password:'21232f297a57a5a743894a0e4a801fc3', saldo:0, phone:'081234567890', alamat:'Kantor Pusat'}
+                ],
+                transactions: [],
+                pickups: [],
+                withdraws: []
+            };
+            localStorage.setItem(this.dbName, JSON.stringify(initData));
+        }
     }
-
-    if(amount > saldoNasabah){
-        alert("Saldo tidak cukup!");
-        return;
+    
+    getDB() {
+        return JSON.parse(localStorage.getItem(this.dbName) || '{}');
     }
-
-    saldoNasabah -= amount;
-    riwayatTransaksi.push(`Transfer Rp ${amount} ke ${bank} (${rekening})`);
-
-    alert("Transfer berhasil!");
-    showStep("step3");
-
-}
-
-function showHistory(){
-    showStep("stepHistory");
-    historyDetail.innerHTML = riwayatTransaksi.join("<br>");
-}
-
-function getCurrentLocation(){
-    if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition((pos)=>{
-            alamatJemput.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
-            autoPreviewMap();
+    
+    saveDB(data) {
+        localStorage.setItem(this.dbName, JSON.stringify(data));
+    }
+    
+    // AUTH
+    login(username, password) {
+        const db = this.getDB();
+        const user = db.users.find(u => u.username === username && u.password === this.md5(password));
+        return user ? {success:true, user} : {success:false, message:'Username/password salah'};
+    }
+    
+    register(userData) {
+        const db = this.getDB();
+        if(db.users.find(u => u.username === userData.username)) {
+            return {success:false, message:'Username sudah terdaftar'};
+        }
+        const newUser = {
+            id: Date.now(),
+            saldo: 0,
+            ...userData,
+            password: this.md5(userData.password)
+        };
+        db.users.push(newUser);
+        this.saveDB(db);
+        return {success:true, message:'Registrasi berhasil!'};
+    }
+    
+    getSaldo(userId) {
+        const db = this.getDB();
+        const user = db.users.find(u => u.id == userId);
+        return user ? user.saldo : 0;
+    }
+    
+    updateSaldo(userId, amount, type = 'credit') {
+        const db = this.getDB();
+        const userIndex = db.users.findIndex(u => u.id == userId);
+        if(userIndex === -1) return false;
+        
+        const prevSaldo = db.users[userIndex].saldo;
+        db.users[userIndex].saldo += type === 'credit' ? amount : -amount;
+        
+        // Log transaksi
+        db.transactions.unshift({
+            id: Date.now(),
+            user_id: userId,
+            type: type === 'credit' ? 'setor' : 'withdraw',
+            amount,
+            prev_saldo: prevSaldo,
+            new_saldo: db.users[userIndex].saldo,
+            date: new Date().toISOString()
         });
+        
+        this.saveDB(db);
+        return true;
     }
+    
+    addTransaction(userId, type, detail) {
+        const db = this.getDB();
+        db.transactions.unshift({
+            id: Date.now(),
+            user_id: userId,
+            type,
+            detail,
+            date: new Date().toISOString()
+        });
+        this.saveDB(db);
+    }
+    
+    getHistory(userId) {
+        const db = this.getDB();
+        return db.transactions.filter(t => t.user_id == userId).slice(0, 50);
+    }
+    
+    md5(str) {
+        // Simple MD5 simulation
+        return btoa(str).slice(0,32).replace(/[^a-f0-9]/g,'');
+    }
+}
+
+// Global DB Instance
+const db = new UCollectDB();
+let currentUser = null;
+
+// Navigation
+function showStep(stepId) {
+    document.querySelectorAll('.container > div').forEach(div => {
+        div.classList.add('hidden');
+    });
+    document.getElementById(stepId).classList.remove('hidden');
+    
+    // Auto refresh saldo di dashboard
+    if(stepId === 'step3' && currentUser) {
+        updateSaldoDisplay();
+    }
+}
+
+// LOGIN
+async function loginUser() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    if(!username || !password) {
+        showMessage('loginMessage', 'Lengkapi username dan password!', 'error');
+        return;
+    }
+    
+    const spinner = document.getElementById('loginSpinner');
+    spinner.style.display = 'inline-block';
+    
+    setTimeout(() => {
+        const result = db.login(username, password);
+        
+        spinner.style.display = 'none';
+        
+        if(result.success) {
+            currentUser = result.user;
+            localStorage.setItem('ucollect_user', JSON.stringify(currentUser));
+            document.getElementById('userInfo').textContent = `| ${currentUser.nama}`;
+            updateSaldoDisplay();
+            showStep('step3');
+            showMessage('loginMessage', 'Login berhasil! Selamat datang!', 'success');
+        } else {
+            showMessage('loginMessage', result.message, 'error');
+        }
+    }, 1000);
+}
+
+// REGISTER
+async function registerUser() {
+    const userData = {
+        nama: document.getElementById('regNama').value.trim(),
+        username: document.getElementById('regUsername').value.trim(),
+        password: document.getElementById('regPassword').value,
+        phone: document.getElementById('regPhone').value.trim(),
+        alamat: document.getElementById('regAlamat').value.trim()
+    };
+    
+    if(!userData.nama || !userData.username || !userData.password || userData.password.length < 4) {
+        showMessage('regMessage', 'Lengkapi semua data! Password minimal 4 karakter', 'error');
+        return;
+    }
+    
+    const spinner = document.getElementById('regSpinner');
+    spinner.style.display = 'inline-block';
+    
+    setTimeout(() => {
+        spinner.style.display = 'none';
+        const result = db.register(userData);
+        
+        if(result.success) {
+            showMessage('regMessage', result.message + ' Silakan login.', 'success');
+            showStep('step2');
+            // Clear form
+            document.querySelectorAll('#stepRegister input, #stepRegister textarea').forEach(el => el.value = '');
+        } else {
+            showMessage('regMessage', result.message, 'error');
+        }
+    }, 1500);
+}
+
+// SALDO DISPLAY
+function updateSaldoDisplay() {
+    if(!currentUser) return;
+    
+    const saldo = db.getSaldo(currentUser.id);
+    document.getElementById('currentSaldo').textContent = `Rp ${saldo.toLocaleString('id-ID')}`;
+    document.getElementById('saldoDetail').textContent = `Rp ${saldo.toLocaleString('id-ID')}`;
+    document.getElementById('withdrawSaldoAvailable').textContent = `Rp ${saldo.toLocaleString('id-ID')}`;
+    
+    document.getElementById('userIdDisplay').textContent = currentUser.id;
+    document.getElementById('userNameDisplay').textContent = currentUser.nama;
+    document.getElementById('userPhoneDisplay').textContent = currentUser.phone || '-';
+}
+
+// SETOR
+document.getElementById('jumlahLiter').addEventListener('input', function() {
+    const liter = parseFloat(this.value) || 0;
+    const total = liter * 5000;
+    
+    document.getElementById('setorTotal').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+    document.getElementById('setorInfo').innerHTML = 
+        liter > 0 ? `${liter} Liter = Rp ${(liter*5000).toLocaleString('id-ID')}` : 
+                   'Masukkan jumlah liter untuk preview';
+});
+
+async function prosesSetor() {
+    const liter = parseFloat(document.getElementById('jumlahLiter').value);
+    if(!liter || liter <= 0) {
+        showMessage('setorMessage', 'Masukkan jumlah liter yang valid!', 'error');
+        return;
+    }
+    
+    const total = liter * 5000;
+    const spinner = document.getElementById('setorSpinner');
+    spinner.style.display = 'inline-block';
+    
+    setTimeout(() => {
+        spinner.style.display = 'none';
+        
+        if(db.updateSaldo(currentUser.id, total, 'credit')) {
+            db.addTransaction(currentUser.id, 'setor_langsung', `Setor ${liter}L = Rp ${total.toLocaleString('id-ID')}`);
+            showMessage('setorMessage', 
+                `✅ Setoran berhasil!<br>
+                 ${liter} Liter = <strong>Rp ${total.toLocaleString('id-ID')}</strong><br>
+                 Saldo bertambah otomatis`, 'success');
+            document.getElementById('jumlahLiter').value = '';
+            updateSaldoDisplay();
+        } else {
+            showMessage('setorMessage', 'Gagal memproses setoran', 'error');
+        }
+    }, 1200);
+}
+
+// WITHDRAW
+async function prosesWithdraw() {
+    const bank = document.getElementById('withdrawBank').value;
+    const nama = document.getElementById('withdrawNama').value.trim();
+    const rekening = document.getElementById('withdrawRekening').value.trim();
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    
+    const saldo = db.getSaldo(currentUser.id);
+    
+    if(!bank || !nama || !rekening || !amount || amount < 50000 || amount > saldo) {
+        showMessage('withdrawMessage', 
+            amount < 50000 ? 'Minimal Rp50.000!' : 
+            amount > saldo ? 'Saldo tidak mencukupi!' : 
+            'Lengkapi semua data!', 'error');
+        return;
+    }
+    
+    const spinner = document.getElementById('withdrawSpinner');
+    spinner.style.display = 'inline-block';
+    
+    setTimeout(() => {
+        spinner.style.display = 'none';
+        
+        if(db.updateSaldo(currentUser.id, amount, 'debit')) {
+            db.addTransaction(currentUser.id, 'withdraw', 
+                `Transfer Rp ${amount.toLocaleString('id-ID')} ke ${bank} ${rekening} (${nama})`);
+            showMessage('withdrawMessage', 
+                `✅ Permintaan withdraw diajukan!<br>
+                 Rp ${amount.toLocaleString('id-ID')} ke ${bank}<br>
+                 ${nama} - ${rekening}<br>
+                 *Menunggu approval admin`, 'success');
+            // Clear form
+            document.getElementById('withdrawBank').value = '';
+            document.getElementById('withdrawNama').value = '';
+            document.getElementById('withdrawRekening').value = '';
+            document.getElementById('withdrawAmount').value = '';
+            updateSaldoDisplay();
+        } else {
+            showMessage('withdrawMessage', 'Gagal mengajukan withdraw', 'error');
+        }
+    }, 1500);
+}
+
+// HISTORY
+async function showHistory() {
+    showStep('stepHistory');
+    const historyList = document.getElementById('historyList');
+    const history = db.getHistory(currentUser.id);
+    
+    if(history.length === 0) {
+        historyList.innerHTML = '<p style="text-align:center;color:#666;">Belum ada riwayat transaksi</p>';
+        return;
+    }
+    
+    historyList.innerHTML = history.map(item => `
+        <div class="history-item">
+            <div style="font-weight:700;font-size:16px;margin-bottom:5px;">
+                ${item.type === 'setor' ? '💰 SETOR' : 
+                  item.type === 'withdraw' ? '🏧 WITHDRAW' : 
+                  item.type.toUpperCase()}
+            </div>
+            <div>${item.detail}</div>
+            <div style="font-size:14px;color:#666;margin-top:8px;">
+                ${new Date(item.date).toLocaleString('id-ID')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// PICKUP
+async function submitPickup() {
+    const alamat = document.getElementById('pickupAlamat').value.trim();
+    const liter = parseFloat(document.getElementById('pickupLiter').value);
+    const jadwal = document.getElementById('pickupJadwal').value;
+    
+    if(!alamat || !liter || liter < 1) {
+        showMessage('pickupMessage', 'Lengkapi alamat dan estimasi minimal 1 liter!', 'error');
+        return;
+    }
+    
+    const spinner = document.getElementById('pickupSpinner');
+    spinner.style.display = 'inline-block';
+    
+    setTimeout(() => {
+        spinner.style.display = 'none';
+        db.addTransaction(currentUser.id, 'pickup_request', 
+            `Request jemput ${liter}L ke ${alamat.substring(0,50)}... (${jadwal})`);
+        showMessage('pickupMessage', 
+            `✅ Request penjemputan berhasil diajukan!<br>
+             ${liter} Liter - ${jadwal}<br>
+             Alamat: ${alamat.substring(0,80)}${alamat.length > 80 ? '...' : ''}<br>
+             *Team akan menghubungi dalam 24 jam`, 'success');
+        // Clear form
+        document.getElementById('pickupAlamat').value = '';
+        document.getElementById('pickupLiter').value = '';
+    }, 1200);
+}
+
+// UTILITY
+function showMessage(elementId, message, type = 'info') {
+    const el = document.getElementById(elementId);
+    el.innerHTML = `<div class="${type === 'success' ? 'success-msg' : 'error-msg'}">${message}</div>`;
+    setTimeout(() => {
+        el.innerHTML = '';
+    }, 5000);
+}
+
+function logoutUser() {
+    currentUser = null;
+    localStorage.removeItem('ucollect_user');
+    showStep('step1');
+}
+
+// INIT APP
+document.addEventListener('DOMContentLoaded', function() {
+    // Check auto-login
+    const savedUser = localStorage.getItem('ucollect_user');
+    if(savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            document.getElementById('userInfo').textContent = `| ${currentUser.nama}`;
+            updateSaldoDisplay();
+            showStep('step3');
+        } catch(e) {
+            console.log('Auto-login failed');
+        }
+    }
+    
+    // Preview setor real-time
+    document.getElementById('jumlahLiter').addEventListener('input', function() {
+        const liter = parseFloat(this.value) || 0;
+        document.getElementById('setorTotal').textContent = `Rp ${(liter * 5000).toLocaleString('id-ID')}`;
+    });
+    
+    // Form validation
+    document.querySelectorAll('input[required], textarea[required]').forEach(el => {
+        el.addEventListener('blur', function() {
+            if(!this.value.trim()) {
+                this.style.borderColor = '#dc3545';
+            } else {
+                this.style.borderColor = '#28a745';
+            }
+        });
+    });
+});
+
+// PWA Support
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('data:text/javascript;base64,' + 
+    btoa(`self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));
+    self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));`));
 }
 </script>
 
